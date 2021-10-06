@@ -27,8 +27,8 @@ apt install bind9 -y
 echo '
 zone "jarkom2021.com" {
 	type master;
-  notify yes;
-  also-notify { '$WATER7_IP'; };
+  // notify yes; // buat setting dns slave
+  // also-notify { '$WATER7_IP'; }; // buat setting dns slave
   allow-transfer { '$WATER7_IP'; };
 	file "/etc/bind/jarkom/jarkom2021.com";
 };
@@ -53,6 +53,8 @@ echo "\
 @       IN      A       127.0.0.1
 WWW     IN      CNAME   jarkom2021.com. 
 luffy   IN      A       $WATER7_IP
+ns1     IN      A       $WATER7_IP
+its     IN      NS      ns1     
 " > /etc/bind/jarkom/jarkom2021.com
 
 echo "\
@@ -68,6 +70,10 @@ $PTR_RECORD.       IN      NS      jarkom2021.com.
 2                  IN      PTR     jarkom2021.com. ; byte ke 4 dari $ENIESLOBBY_IP
 " > /etc/bind/jarkom/$PTR_RECORD
 
+sed -ie '/dnssec-validation auto;/s|^/*|//|' /etc/bind/named.conf.options
+# sed -ie '/allow-query{any;};/s///g' /etc/bind/named.conf.options
+# sed -ie '/dnssec-validation auto;/s|$|\n\tallow-query{any;};|' /etc/bind/named.conf.options
+
 service bind9 restart
 
 ###
@@ -78,12 +84,36 @@ apt update
 apt install bind9 -y
 
 echo '
+// setup slave
+// zone "jarkom2021.com" {
+//	type slave;
+//  masters { '$ENIESLOBBY_IP'; };
+//	file "/var/lib/bind/jarkom2021.com";
+// };
+
 zone "jarkom2021.com" {
-	type slave;
-  masters { '$ENIESLOBBY_IP'; };
-	file "/var/lib/bind/jarkom2021.com";
+ type master;
+ file "/etc/bind/delegasi/its.jarkom2021.com";
 };
 ' > /etc/bind/named.conf.local
+
+sed -ie '/dnssec-validation auto;/s|^/*|//|' /etc/bind/named.conf.options
+# sed -ie '/dnssec-validation auto;/s|$|\n\tallow-query{any;};|' /etc/bind/named.conf.options
+
+mkdir -p /etc/bind/delegasi
+echo "\
+\$TTL    604800
+@       IN      SOA     its.jarkom2021.com. root.its.jarkom2021.com. (
+                              2         ; Serial
+                         604800         ; Refresh
+                          86400         ; Retry
+                        2419200         ; Expire
+                         604800 )       ; Negative Cache TTL
+;
+@        IN      NS      its.jarkom2021.com.
+@        IN      A       $WATER7_IP
+integra  IN      A       $WATER7_IP
+" > /etc/bind/delegasi/its.jarkom2021.com
 
 service bind9 restart
 
