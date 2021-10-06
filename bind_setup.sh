@@ -70,9 +70,25 @@ $PTR_RECORD.       IN      NS      jarkom2021.com.
 2                  IN      PTR     jarkom2021.com. ; byte ke 4 dari $ENIESLOBBY_IP
 " > /etc/bind/jarkom/$PTR_RECORD
 
-sed -ie '/dnssec-validation auto;/s|^/*|//|' /etc/bind/named.conf.options
+# sed -ie '/dnssec-validation auto;/s|^/*|//|' /etc/bind/named.conf.options
 # sed -ie '/allow-query{any;};/s///g' /etc/bind/named.conf.options
 # sed -ie '/dnssec-validation auto;/s|$|\n\tallow-query{any;};|' /etc/bind/named.conf.options
+
+echo "
+options {
+        directory \"/var/cache/bind\";
+
+        // forwarders {
+        //       $DNS; //ns foosha
+        // };
+
+        // dnssec-validation auto;
+        allow-query{any;};
+
+        auth-nxdomain no;    # conform to RFC1035
+        listen-on-v6 { any; };
+};
+" > /etc/bind/named.conf.options
 
 service bind9 restart
 
@@ -91,14 +107,29 @@ echo '
 //	file "/var/lib/bind/jarkom2021.com";
 // };
 
-zone "jarkom2021.com" {
+zone "its.jarkom2021.com" {
  type master;
  file "/etc/bind/delegasi/its.jarkom2021.com";
 };
 ' > /etc/bind/named.conf.local
 
-sed -ie '/dnssec-validation auto;/s|^/*|//|' /etc/bind/named.conf.options
+# sed -ie '/dnssec-validation auto;/s|^/*|//|' /etc/bind/named.conf.options
 # sed -ie '/dnssec-validation auto;/s|$|\n\tallow-query{any;};|' /etc/bind/named.conf.options
+echo "
+options {
+        directory \"/var/cache/bind\";
+
+        forwarders {
+              $DNS; # ns foosha
+        };
+
+        // dnssec-validation auto;
+        allow-query{any;};
+
+        auth-nxdomain no;    # conform to RFC1035
+        listen-on-v6 { any; };
+};
+" > /etc/bind/named.conf.options
 
 mkdir -p /etc/bind/delegasi
 echo "\
