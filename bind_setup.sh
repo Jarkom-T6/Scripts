@@ -31,7 +31,7 @@ zone "'$PTR_RECORD'" {
 	type master;
 	file "/etc/bind/jarkom/'$PTR_RECORD'";
 };
-' >> /etc/bind/named.conf.local
+' > /etc/bind/named.conf.local
 
 mkdir -p /etc/bind/jarkom
 echo "\
@@ -66,11 +66,11 @@ elif [[ $HOSTNAME = "Loguetown" ]]; then
 apt update
 apt install dnsutils
 sed -ie 's/^#*/#/g' /etc/resolv.conf
-echo "nameserver $ENIESLOBBY_IP # IP EniesLobby" > /etc/resolv.conf
+echo "nameserver $ENIESLOBBY_IP # IP EniesLobby" >> /etc/resolv.conf
 
 elif [[ $HOSTNAME = "Alabasta" ]]; then
 sed -ie 's/^#*/#/g' /etc/resolv.conf
-echo "nameserver $ENIESLOBBY_IP # IP EniesLobby" > /etc/resolv.conf
+echo "nameserver $ENIESLOBBY_IP # IP EniesLobby" >> /etc/resolv.conf
 
 fi
 
