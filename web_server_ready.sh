@@ -51,7 +51,7 @@ zone "' $PTR_RECORD '" {
 @       IN      A       $ENIESLOBBY_IP
 www     IN      CNAME   jarkom2021.com. 
 luffy   IN      A       $WATER7_IP
-ns1     IN      A       $WATER7_IP
+ns1     IN      A       $ENIESLOBBY_IP
 its     IN      NS      ns1     
 " >/etc/bind/jarkom/jarkom2021.com
 
@@ -65,8 +65,9 @@ its     IN      NS      ns1
                          604800 )       ; Negative Cache TTL
 ;
 $PTR_RECORD.       IN      NS      jarkom2021.com.
-2                  IN      PTR     jarkom2021.com. ; byte ke 4 dari $ENIESLOBBY_IP
+3                  IN      PTR     jarkom2021.com. ; byte ke 4 dari $WATER7_IP
 " >/etc/bind/jarkom/$PTR_RECORD
+# 2                  IN      PTR     jarkom2021.com. ; byte ke 4 dari $ENIESLOBBY_IP
 
 	echo "
 options {
