@@ -148,7 +148,7 @@ nameserver '$WATER7_IP' # IP Water7
 elif [[ $HOSTNAME = "Alabasta" ]]; then
 	apt update
 	apt install dnsutils
-	sed -ie 's/^#*/#/g' /etc/resolv.conf
+	# sed -ie 's/^#*/#/g' /etc/resolv.conf
 	echo '
 # nameserver 192.168.122.1
 nameserver '$ENIESLOBBY_IP' # IP EniesLobby
