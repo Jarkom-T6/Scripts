@@ -56,7 +56,7 @@ zone "'$PTR_RECORD'" {
                          604800 )       ; Negative Cache TTL
 ;
 @       IN      NS      franky.ti6.com.
-@       IN      A       $SKYPIE_IP
+@       IN      A       $ENIESLOBBY_IP
 www     IN      CNAME   franky.ti6.com. 
 super   IN      A       $SKYPIE_IP     
 ns1     IN      A       $WATER7_IP     
@@ -87,9 +87,8 @@ www     IN      CNAME   super.franky.ti6.com.
                          604800 )       ; Negative Cache TTL
 ;
 $PTR_RECORD.       IN      NS      franky.ti6.com.
-4                  IN      PTR     franky.ti6.com. ; byte ke 4 dari $SKYPIE_IP
+2                  IN      PTR     franky.ti6.com. ; byte ke 4 dari $ENIESLOBBY_IP
 " >/etc/bind/kaizoku/$PTR_RECORD
-# 2                  IN      PTR     franky.ti6.com. ; byte ke 4 dari $ENIESLOBBY_IP
 
 	echo "
 options {
