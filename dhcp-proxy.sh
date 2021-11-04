@@ -22,9 +22,36 @@ PTR_RECORD="$ENIESLOBBY_IP_REV.in-addr.arpa"
 function Foosha {
 	apt update
 	apt install isc-dhcp-server -y
-	cat >/etc/default/isc-dhcp-server <<EOT
+
+	cat >/etc/default/isc-dhcp-server <<eof
 INTERFACES="eth1"
-EOT
+eof
+
+	cat >/etc/dhcp/dhcpd.conf <<eof
+ddns-update-style none;
+option domain-name "example.org";
+option domain-name-servers ns1.example.org, ns2.example.org;
+default-lease-time 600;
+max-lease-time 7200;
+log-facility local7;
+
+subnet 192.214.1.0 netmask 255.255.255.0 {
+range 192.214.1.5 192.214.1.10;
+option routers 192.214.1.1;
+option broadcast-address 192.214.1.254;
+option domain-name-servers 202.46.129.2;
+default-lease-time 600;
+max-lease-time 7200;
+}
+
+host Jipangu {
+    hardware ethernet 2a:6c:0f:b2:e9:4c;
+    fixed-address 192.214.1.13;
+}
+eof
+
+	service isc-dhcp-server restart
+
 }
 
 # Server
@@ -36,6 +63,15 @@ function EniesLobby {
 function Water7 {
 	apt update
 	apt install squid -y
+
+	mv /etc/squid/squid.conf /etc/squid/squid.conf.bak
+
+	cat >/etc/squid/squid.conf <<eof
+http_port 8080
+visible_hostname Water7
+eof
+
+	service squid restart
 }
 
 # Client
@@ -61,7 +97,7 @@ if host-is Foosha; then
 elif host-is EniesLobby; then
 	EniesLobby
 elif host-is Water7; then
-	Jipangu
+	Water7
 elif host-is Jipangu; then
 	Jipangu
 elif host-is Loguetown; then
