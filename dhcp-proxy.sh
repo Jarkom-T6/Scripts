@@ -3,7 +3,6 @@
 # Written by m42nk
 
 set -eo pipefail
-
 # Variables
 GRP="TI6"
 PREFIX="192.214"
@@ -21,47 +20,52 @@ PTR_RECORD="$ENIESLOBBY_IP_REV.in-addr.arpa"
 
 # Router
 function Foosha {
-  apt update
-  apt install isc-dhcp-server -y
-
-  cat << END > /etc/default/isc-dhcp-server
-  INTERFACE="eth0"
-  END
+	apt update
+	apt install isc-dhcp-server -y
+	cat >/etc/default/isc-dhcp-server <<EOT
+INTERFACES="eth1"
+EOT
 }
 
 # Server
 function EniesLobby {
-  apt update
-  apt install bind9 -y
+	apt update
+	apt install bind9 -y
 }
 
 function Water7 {
-  apt update
-  apt install squid -y
+	apt update
+	apt install squid -y
 }
 
 # Client
 function Loguetown {
-  apt update
+	apt update
 }
 
 function Alabasta {
-  apt update
+	apt update
 }
 
 function Jipangu {
-  apt update
+	apt update
 }
 
 function host-is { [[ $HOSTNAME = "$1" ]] && return 0 || return 1; }
 function update {
-  local last_update = $(stat -c '%y' /var/cache/apt)
+	local last_update = $(stat -c '%y' /var/cache/apt)
 }
 
-if host-is Foosha; then Foosha
-elif host-is EniesLobby; then EniesLobby
-elif host-is Water7; then Jipangu
-elif host-is Jipangu; then Jipangu
-elif host-is Loguetown; then Loguetown
-elif host-is Alabasta; then Alabasta
+if host-is Foosha; then
+	Foosha
+elif host-is EniesLobby; then
+	EniesLobby
+elif host-is Water7; then
+	Jipangu
+elif host-is Jipangu; then
+	Jipangu
+elif host-is Loguetown; then
+	Loguetown
+elif host-is Alabasta; then
+	Alabasta
 fi
