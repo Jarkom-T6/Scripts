@@ -37,7 +37,6 @@ function Water7 {
 }
 
 # Client
-
 function Loguetown {
   apt update
 }
@@ -50,7 +49,7 @@ function Jipangu {
   apt update
 }
 
-function host-is() { [[ $HOSTNAME = "$1" ]] && return 0 || return 1 }
+function host-is { [[ $HOSTNAME = "$1" ]] && return 0 || return 1; }
 
 if host-is Foosha; then Foosha
 elif host-is EniesLobby; then EniesLobby
