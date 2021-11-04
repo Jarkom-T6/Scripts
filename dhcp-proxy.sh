@@ -23,6 +23,10 @@ PTR_RECORD="$ENIESLOBBY_IP_REV.in-addr.arpa"
 function Foosha {
   apt update
   apt install isc-dhcp-server -y
+
+  cat << END > /etc/default/isc-dhcp-server
+  INTERFACE="eth0"
+  END
 }
 
 # Server
@@ -50,6 +54,9 @@ function Jipangu {
 }
 
 function host-is { [[ $HOSTNAME = "$1" ]] && return 0 || return 1; }
+function update {
+  local last_update = $(stat -c '%y' /var/cache/apt)
+}
 
 if host-is Foosha; then Foosha
 elif host-is EniesLobby; then EniesLobby
