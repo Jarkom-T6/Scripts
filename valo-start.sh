@@ -106,6 +106,29 @@ options {
 };
 eof
 
+mkdir -p /etc/bind/jarkom/
+
+    cat >/etc/bind/named.conf.local <<eof
+zone "jualbelikapal.ti6.com" {
+  type master;
+  file "/etc/bind/jarkom/jualbelikapal.ti6.com";
+};
+eof
+    
+        cat >/etc/bind/jarkom/jualbelikapal.ti6.com <<eof
+\$TTL    604800
+@       IN      SOA     jualbelikapal.ti6.com. root.jualbelikapal.ti6.com. (
+                              2         ; Serial
+                         604800         ; Refresh
+                          86400         ; Retry
+                        2419200         ; Expire
+                         604800 )       ; Negative Cache TTL
+;
+@       IN      NS      jualbelikapal.ti6.com.
+@       IN      A       192.214.2.3
+eof
+        
+  service bind9 restart
 }
 
 function Skypie {
@@ -113,18 +136,44 @@ function Skypie {
 }
 
 function Water7 {
-	echo "halo"
-#	apt update
-#	apt install squid -y
-#
-#	mv /etc/squid/squid.conf /etc/squid/squid.conf.bak
-#
-#	cat >/etc/squid/squid.conf <<eof
-#http_port 8080
-#visible_hostname Water7
-#eof
-#
-#	service squid restart
+  apt update
+  apt install \
+      squid \
+      apache2-utils \
+      -y
+
+  touch /etc/squid/passwd
+  htpasswd -mb /etc/squid/passwd luffybelikapalti6 luffy_ti6
+  htpasswd -mb /etc/squid/passwd zorobelikapalti6 zoro_ti6
+
+	cat >/etc/squid/squid.conf <<eof
+include /etc/squid/acl.conf
+
+http_port 5000
+visible_hostname Water7
+
+auth_param basic program /usr/lib/squid/basic_ncsa_auth /etc/squid/passwd
+auth_param basic children 5
+auth_param basic realm Proxy
+auth_param basic credentialsttl 2 hours
+auth_param basic casesensitive on
+acl USERS proxy_auth REQUIRED
+
+http_access allow acltime1
+http_access allow acltime2
+http_access allow acltime3
+
+http_access deny all
+http_access allow USERS
+eof
+
+	cat >/etc/squid/acl.conf <<eof
+acl acltime1 time MTWH 07:00-11:00
+acl acltime2 time TWHF 17:00-23:59
+acl acltime3 time WHFA 00:00-03:00
+eof
+
+	service squid restart
 }
 
 # Client
