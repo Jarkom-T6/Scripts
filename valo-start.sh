@@ -184,6 +184,7 @@ eof
 function Loguetown {
 	apt update
 	apt install lynx -y
+  export http_proxy="http://jualbelikapal.ti6.com:5000"
 }
 
 function Alabasta {
