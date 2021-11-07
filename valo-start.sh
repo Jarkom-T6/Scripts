@@ -135,6 +135,10 @@ function Skypie {
 	echo "halo"
 }
 
+function TottoLand {
+	echo "halo"
+}
+
 function Water7 {
   apt update
   apt install \
@@ -179,7 +183,7 @@ eof
 # Client
 function Loguetown {
 	apt update
-	# apt install lynx -y
+	apt install lynx -y
 }
 
 function Alabasta {
