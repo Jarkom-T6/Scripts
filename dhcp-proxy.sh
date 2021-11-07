@@ -77,14 +77,17 @@ eof
 # Client
 function Loguetown {
 	apt update
+	apt install lynx -y
 }
 
 function Alabasta {
 	apt update
+	apt install lynx -y
 }
 
 function Jipangu {
 	apt update
+	apt install lynx -y
 }
 
 function host-is { [[ $HOSTNAME = "$1" ]] && return 0 || return 1; }
