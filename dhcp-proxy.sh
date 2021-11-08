@@ -58,6 +58,7 @@ eof
 function EniesLobby {
 	apt update
 	apt install bind9 -y
+
 }
 
 function Water7 {

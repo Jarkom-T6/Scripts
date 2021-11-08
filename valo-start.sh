@@ -113,6 +113,11 @@ zone "jualbelikapal.ti6.com" {
   type master;
   file "/etc/bind/jarkom/jualbelikapal.ti6.com";
 };
+
+zone "super.franky.ti6.com" {
+  type master;
+  file "/etc/bind/jarkom/super.franky.ti6.com";
+};
 eof
 
 	cat >/etc/bind/jarkom/jualbelikapal.ti6.com <<eof
@@ -128,12 +133,26 @@ eof
 @       IN      A       192.214.2.3
 eof
 
+	cat >/etc/bind/jarkom/super.franky.ti6.com <<eof
+\$TTL    604800
+@       IN      SOA     super.franky.ti6.com. root.super.franky.ti6.com. (
+                              2         ; Serial
+                         604800         ; Refresh
+                          86400         ; Retry
+                        2419200         ; Expire
+                         604800 )       ; Negative Cache TTL
+;
+@       IN      NS      super.franky.ti6.com.
+@       IN      A       192.214.3.69
+eof
+
 	service bind9 restart
 }
 
 function Skypie {
 	apt install \
 		apache2 \
+		unzip \
 		php -y
 
 	curl -Lk https://github.com/FeinardSlim/Praktikum-Modul-2-Jarkom/raw/main/super.franky.zip -o super.franky.zip
@@ -157,6 +176,8 @@ function Skypie {
         CustomLog ${APACHE_LOG_DIR}/access.log combined
 </VirtualHost>
 eof
+
+  service apache2 restart
 }
 
 function TottoLand {
@@ -187,17 +208,33 @@ auth_param basic credentialsttl 2 hours
 auth_param basic casesensitive on
 acl USERS proxy_auth REQUIRED
 
+# http_access deny all
+http_access allow USERS
+
 http_access allow acltime1
 http_access allow acltime2
 http_access allow acltime3
-
-http_access deny all
-http_access allow USERS
 
 acl lan src 192.214.1.0/24 192.214.3.0/24
 acl badsites dstdomain .google.com
 deny_info http://super.franky.ti6.com/ lan
 http_reply_access deny badsites lan
+
+dns_nameservers 192.214.2.2
+
+acl luffy proxy_auth luffybelkapalti6
+acl zoro proxy_auth zorobelkapalti6
+
+#delay_pools 1
+#delay_class 1 3
+#delay_access 1 allow luffy
+#delay_access 1 deny all
+#delay_parameters 1 10000/10000
+
+delay_pools 1
+delay_class 1 1
+delay_access 1 allow all
+delay_parameters 1 16000/64000
 eof
 
 	cat >/etc/squid/acl.conf <<eof
@@ -213,7 +250,8 @@ eof
 function Loguetown {
 	apt update
 	apt install lynx -y
-	export http_proxy="http://jualbelikapal.ti6.com:5000"
+	# export http_proxy="http://jualbelikapal.ti6.com:5000"
+	export http_proxy="http://luffybelikapalti6:luffy_ti6@jualbelikapal.ti6.com:5000"
 	bash
 }
 
