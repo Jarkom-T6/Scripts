@@ -189,6 +189,8 @@ function Water7 {
 	apt install \
 		squid \
 		apache2-utils \
+    ca-certificates \
+    speedtest-cli\
 		-y
 
 	touch /etc/squid/passwd
@@ -222,19 +224,20 @@ http_reply_access deny badsites lan
 
 dns_nameservers 192.214.2.2
 
-acl luffy proxy_auth luffybelkapalti6
-acl zoro proxy_auth zorobelkapalti6
-
-#delay_pools 1
-#delay_class 1 3
-#delay_access 1 allow luffy
-#delay_access 1 deny all
-#delay_parameters 1 10000/10000
+acl luffy proxy_auth luffybelikapalti6
+acl zoro proxy_auth zorobelikapalti6
+acl downloadluffy urlpath_regex -i \.jpg$ \.png$
+acl downloadzoro urlpath_regex -i \.woi$ \.listingbro$ \.cursed$  \.jpg234$  \.$
 
 delay_pools 1
 delay_class 1 1
-delay_access 1 allow all
-delay_parameters 1 16000/64000
+delay_parameters 1 10000/10000
+delay_access 1 allow downloadluffy luffy
+delay_access 1 deny all
+
+http_reply_access deny downloadzoro luffy
+http_reply_access deny downloadluffy zoro
+
 eof
 
 	cat >/etc/squid/acl.conf <<eof
