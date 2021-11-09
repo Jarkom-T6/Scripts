@@ -189,8 +189,8 @@ function Water7 {
 	apt install \
 		squid \
 		apache2-utils \
-    ca-certificates \
-    speedtest-cli\
+		# ca-certificates \
+		# speedtest-cli\
 		-y
 
 	touch /etc/squid/passwd
