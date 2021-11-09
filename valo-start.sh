@@ -201,21 +201,22 @@ function Water7 {
 include /etc/squid/acl.conf
 
 http_port 5000
-visible_hostname Water7
 
 auth_param basic program /usr/lib/squid/basic_ncsa_auth /etc/squid/passwd
 auth_param basic children 5
 auth_param basic realm Proxy
 auth_param basic credentialsttl 2 hours
 auth_param basic casesensitive on
+
 acl USERS proxy_auth REQUIRED
 
-# http_access deny all
-http_access allow USERS
+http_access allow acltime1 USERS
+http_access allow acltime2 USERS
+http_access allow acltime3 USERS
 
-http_access allow acltime1
-http_access allow acltime2
-http_access allow acltime3
+http_access deny all
+
+visible_hostname Water7
 
 acl lan src 192.214.1.0/24 192.214.3.0/24
 acl badsites dstdomain .google.com
@@ -227,8 +228,8 @@ dns_nameservers 192.214.2.2
 acl luffy proxy_auth luffybelikapalti6
 acl zoro proxy_auth zorobelikapalti6
 acl downloadluffy urlpath_regex -i \.jpg$ \.png$
-acl downloadzoro urlpath_regex -i !\.jpg$ !\.png$
- 
+acl downloadzoro urlpath_regex -i \.woi$ \.listingbro$ \.cursed$  \.jpg234$  \.99689$
+
 delay_pools 1
 delay_class 1 1
 delay_parameters 1 10000/10000
@@ -237,7 +238,6 @@ delay_access 1 deny all
 
 http_reply_access deny downloadzoro luffy
 http_reply_access deny downloadluffy zoro
-
 eof
 
 	cat >/etc/squid/acl.conf <<eof
