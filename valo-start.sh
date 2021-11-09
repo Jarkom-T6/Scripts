@@ -227,7 +227,7 @@ dns_nameservers 192.214.2.2
 acl luffy proxy_auth luffybelikapalti6
 acl zoro proxy_auth zorobelikapalti6
 acl downloadluffy urlpath_regex -i \.jpg$ \.png$
-acl downloadzoro urlpath_regex -i \.woi$ \.listingbro$ \.cursed$  \.jpg234$  \.$
+acl downloadzoro urlpath_regex -i \.woi$ \.listingbro$ \.cursed$  \.jpg234$  \.99689$
  
 delay_pools 1
 delay_class 1 1
