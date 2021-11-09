@@ -150,10 +150,10 @@ eof
 }
 
 function Skypie {
-	apt install \
+	apt install -y \
 		apache2 \
 		unzip \
-		php -y
+		php
 
 	curl -Lk https://github.com/FeinardSlim/Praktikum-Modul-2-Jarkom/raw/main/super.franky.zip -o super.franky.zip
 	unzip super.franky.zip
@@ -186,12 +186,12 @@ function TottoLand {
 
 function Water7 {
 	apt update
-	apt install \
+	apt install -y \
 		squid \
 		apache2-utils \
-		# ca-certificates \
-		# speedtest-cli\
-		-y
+		ca-certificates \
+		speedtest-cli \
+		
 
 	touch /etc/squid/passwd
 	htpasswd -mb /etc/squid/passwd luffybelikapalti6 luffy_ti6
