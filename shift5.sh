@@ -208,17 +208,17 @@ elif host-is Water7; then
 	Water7
 elif host-is Guanhao; then
 	Guanhao
-elif host-is Blueno(100); then
+elif host-is Blueno; then
 	Blueno
-elif host-is Cipher(700); then
+elif host-is Cipher; then
 	Cipher
 elif host-is Jipangu; then
 	Jipangu
 elif host-is Doriki; then
 	Doriki
-elif host-is Elena(300); then
+elif host-is Elena; then
 	Elena
-elif host-is Fukurou(200); then
+elif host-is Fukurou; then
 	Fukurou
 elif host-is Maingate; then
 	Maingate
