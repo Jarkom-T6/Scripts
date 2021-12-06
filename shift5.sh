@@ -5,14 +5,15 @@ set -eo pipefail
 # Router
 function Foosha {
     apt update
-    # route add -net 192.214.7.0 netmask 255.255.255.128 gw 192.214.7.146
-    # route add -net 192.214.0.0 netmask 255.255.252.0 gw 192.214.7.146
-    # route add -net 192.214.7.128 netmask 255.255.255.248 gw 192.214.7.146
+    	# route add -net 192.214.7.0 netmask 255.255.255.128 gw 192.214.7.146
+    	# route add -net 192.214.0.0 netmask 255.255.252.0 gw 192.214.7.146
+    	# route add -net 192.214.7.128 netmask 255.255.255.248 gw 192.214.7.146
 	# route add -net 192.214.4.0 netmask 255.255.254.0 gw 192.214.7.150
 	# route add -net 192.214.6.0 netmask 255.255.255.0 gw 192.214.7.150
 	# route add -net 192.214.7.136 netmask 255.255.255.248 gw 192.214.7.150
 	#Ganti IP Masquarade, Jangan lupa ganti source nya dengan IP Eth 0
-	iptables -t nat -A POSTROUTING -o eth0 -j SNAT --to-source 192.168.122.36 -s 192.214.0.0/21
+	IPETH0="$(ip -br a | grep eth0 | awk '{print $NF}' | cut -d'/' -f1)"
+	iptables -t nat -A POSTROUTING -o eth0 -j SNAT --to-source "$IPETH0" -s 192.214.0.0/21
 	apt install isc-dhcp-relay -y
 
 	cat >/etc/default/isc-dhcp-relay <<eof
@@ -189,11 +190,17 @@ eof
 function Maingate { #Web Server
 	#echo nameserver 192.214.7.130 > /etc/resolv.conf
 	apt update
+	apt install apache2 -y
+	service apache2 start
+	echo "$HOSTNAME" > /var/www/html/index.html
 }
 
 function Jorge { #Web Server
 	#echo nameserver 192.214.7.130 > /etc/resolv.conf
 	apt update
+	apt install apache2 -y
+	service apache2 start
+	echo "$HOSTNAME" > /var/www/html/index.html
 }
 
 function host-is { [[ $HOSTNAME = "$1" ]] && return 0 || return 1; }
