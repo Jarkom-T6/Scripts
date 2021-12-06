@@ -1,0 +1,35 @@
+Konfigurasi IP
+Foosha
+#Sebelah kanan
+Network 192.214.7.0 Netmask 255.255.255.128 Next Hop 192.214.7.146
+Network 192.214.0.0 Netmask 255.255.252.0 Next Hop 192.214.7.146
+Network 192.214.7.128 Netmask 255.255.255.248 Next Hop 192.214.7.146
+
+#Sebelah Kiri
+Network 192.214.4.0 Netmask 255.255.254.0 Next Hop 192.214.7.150
+Network 192.214.6.0 Netmask 255.255.255.0 Next Hop 192.214.7.150
+Network 192.214.7.136 Netmask 255.255.255.248 Next Hop 192.214.7.150
+
+Water7
+Network 0.0.0.0 Netmask 0.0.0.0 Next Hop 192.214.7.145
+
+Guanhao
+Network 0.0.0.0 Netmask 0.0.0.0 Next Hop 192.214.7.145
+
+Config GNS 3
+Foosha
+#Sebelah kanan
+route add -net 192.214.7.0 netmask 255.255.255.128 gw 192.214.7.146
+route add -net 192.214.0.0 netmask 255.255.252.0 gw 192.214.7.146
+route add -net 192.214.7.128 netmask 255.255.255.248 gw 192.214.7.146
+
+#Sebelah Kiri
+route add -net 192.214.4.0 netmask 255.255.254.0 gw 192.214.7.150
+route add -net 192.214.6.0 netmask 255.255.255.0 gw 192.214.7.150
+route add -net 192.214.7.136 netmask 255.255.255.248 gw 192.214.7.150
+
+Water7
+route add -net 0.0.0.0 netmask 0.0.0.0 gw 192.214.7.145
+iptables -t nat -A POSTROUTING -o eth0 -j SNAT --to-source 192.168.122.87 -s 192.214.0.0/21
+Guanhao
+route add -net 0.0.0.0 netmask 0.0.0.0 gw 192.214.7.149
