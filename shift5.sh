@@ -5,12 +5,12 @@ set -eo pipefail
 # Router
 function Foosha {
     apt update
-    route add -net 192.214.7.0 netmask 255.255.255.128 gw 192.214.7.146
-    route add -net 192.214.0.0 netmask 255.255.252.0 gw 192.214.7.146
-    route add -net 192.214.7.128 netmask 255.255.255.248 gw 192.214.7.146
-	route add -net 192.214.4.0 netmask 255.255.254.0 gw 192.214.7.150
-	route add -net 192.214.6.0 netmask 255.255.255.0 gw 192.214.7.150
-	route add -net 192.214.7.136 netmask 255.255.255.248 gw 192.214.7.150
+    # route add -net 192.214.7.0 netmask 255.255.255.128 gw 192.214.7.146
+    # route add -net 192.214.0.0 netmask 255.255.252.0 gw 192.214.7.146
+    # route add -net 192.214.7.128 netmask 255.255.255.248 gw 192.214.7.146
+	# route add -net 192.214.4.0 netmask 255.255.254.0 gw 192.214.7.150
+	# route add -net 192.214.6.0 netmask 255.255.255.0 gw 192.214.7.150
+	# route add -net 192.214.7.136 netmask 255.255.255.248 gw 192.214.7.150
 	#Ganti IP Masquarade, Jangan lupa ganti source nya dengan IP Eth 0
 	iptables -t nat -A POSTROUTING -o eth0 -j SNAT --to-source 192.168.122.36 -s 192.214.0.0/21
 	apt install isc-dhcp-relay -y
@@ -27,9 +27,9 @@ eof
 }
 
 function Water7 {
-	echo nameserver 192.214.7.130 > /etc/resolv.conf
+	#echo nameserver 192.214.7.130 > /etc/resolv.conf
+	#route add -net 0.0.0.0 netmask 0.0.0.0 gw 192.214.7.145
     apt update
-    route add -net 0.0.0.0 netmask 0.0.0.0 gw 192.214.7.145
 	apt install isc-dhcp-relay -y
 
 	cat >/etc/default/isc-dhcp-relay <<eof
@@ -43,9 +43,9 @@ eof
 }
 
 function Guanhao {
-	echo nameserver 192.214.7.130 > /etc/resolv.conf
+	# echo nameserver 192.214.7.130 > /etc/resolv.conf
+	# route add -net 0.0.0.0 netmask 0.0.0.0 gw 192.214.7.149
 	apt update
-    route add -net 0.0.0.0 netmask 0.0.0.0 gw 192.214.7.149
 	apt install isc-dhcp-relay -y
 
 	cat >/etc/default/isc-dhcp-relay <<eof
@@ -62,18 +62,18 @@ eof
 
 # Client Water 7
 function Blueno {
-	echo nameserver 192.214.7.130 > /etc/resolv.conf
+	#echo nameserver 192.214.7.130 > /etc/resolv.conf
 	apt update
 }
 
 function Cipher {
-	echo nameserver 192.214.7.130 > /etc/resolv.conf
+	#echo nameserver 192.214.7.130 > /etc/resolv.conf
 	apt update
 }
 
 # Client Guanhao
 function Fukurou {
-	echo nameserver 192.214.7.130 > /etc/resolv.conf
+	# echo nameserver 192.214.7.130 > /etc/resolv.conf
 	apt update
 }
 
@@ -84,7 +84,7 @@ function Elena {
 
 #Server Switch 2
 function Doriki { #DNS Server
-	echo nameserver 192.168.122.1 > /etc/resolv.conf
+	#echo nameserver 192.168.122.1 > /etc/resolv.conf
 	apt update
 	apt install bind9 -y
 
@@ -120,7 +120,7 @@ eof
 }
 
 function Jipangu { #DHCP Server
-	echo nameserver 192.214.7.130 > /etc/resolv.conf
+	#echo nameserver 192.214.7.130 > /etc/resolv.conf
 	apt update
 
 	apt install isc-dhcp-server -y
@@ -187,12 +187,12 @@ eof
 
 #Server Switch 1
 function Maingate { #Web Server
-	echo nameserver 192.214.7.130 > /etc/resolv.conf
+	#echo nameserver 192.214.7.130 > /etc/resolv.conf
 	apt update
 }
 
 function Jorge { #Web Server
-	echo nameserver 192.214.7.130 > /etc/resolv.conf
+	#echo nameserver 192.214.7.130 > /etc/resolv.conf
 	apt update
 }
 
@@ -208,17 +208,17 @@ elif host-is Water7; then
 	Water7
 elif host-is Guanhao; then
 	Guanhao
-elif host-is Blueno; then
+elif host-is Blueno(100); then
 	Blueno
-elif host-is Cipher; then
+elif host-is Cipher(700); then
 	Cipher
 elif host-is Jipangu; then
 	Jipangu
 elif host-is Doriki; then
 	Doriki
-elif host-is Elena; then
+elif host-is Elena(300); then
 	Elena
-elif host-is Fukurou; then
+elif host-is Fukurou(200); then
 	Fukurou
 elif host-is Maingate; then
 	Maingate
