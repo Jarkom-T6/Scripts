@@ -11,53 +11,119 @@ function Foosha {
 	route add -net 192.214.4.0 netmask 255.255.254.0 gw 192.214.7.150
 	route add -net 192.214.6.0 netmask 255.255.255.0 gw 192.214.7.150
 	route add -net 192.214.7.136 netmask 255.255.255.248 gw 192.214.7.150
-
-	#iptables -t nat -A POSTROUTING -o eth0 -j SNAT --to-source 192.168.122.xxx -s 192.214.0.0/21
+	#Ganti IP Masquarade, Jangan lupa ganti source nya dengan IP Eth 0
+	iptables -t nat -A POSTROUTING -o eth0 -j SNAT --to-source 192.168.122.36 -s 192.214.0.0/21
 	apt install isc-dhcp-relay -y
+
+	cat >/etc/default/isc-dhcp-relay <<eof
+SERVERS="192.214.7.131"
+INTERFACES="eth2 eth1"
+OPTIONS=""
+eof
+
+	service isc-dhcp-relay restart
+	iptables -A FORWARD -d 192.214.7.128/29 -i eth0 -p tcp --dport 80 -j DROP
+
 }
 
 function Water7 {
+	echo nameserver 192.214.7.130 > /etc/resolv.conf
     apt update
     route add -net 0.0.0.0 netmask 0.0.0.0 gw 192.214.7.145
-	echo nameserver 192.168.122.1 > /etc/resolv.conf
 	apt install isc-dhcp-relay -y
+
+	cat >/etc/default/isc-dhcp-relay <<eof
+SERVERS="192.214.7.131"
+INTERFACES="eth2 eth1 eth3 eth0"
+OPTIONS=""
+eof
+
+	service isc-dhcp-relay restart
 
 }
 
 function Guanhao {
+	echo nameserver 192.214.7.130 > /etc/resolv.conf
 	apt update
     route add -net 0.0.0.0 netmask 0.0.0.0 gw 192.214.7.149
-	echo nameserver 192.168.122.1 > /etc/resolv.conf
 	apt install isc-dhcp-relay -y
-	
+
+	cat >/etc/default/isc-dhcp-relay <<eof
+SERVERS="192.214.7.131"
+INTERFACES="eth0 eth3 eth1 eth2"
+OPTIONS=""
+eof
+
+	service isc-dhcp-relay restart
+
+	iptables -A PREROUTING -t nat -p tcp -d 192.214.7.130 -m statistic --mode nth --every 2 --packet 0 -j DNAT --to-destination 192.214.7.138:80
+	iptables -A PREROUTING -t nat -p tcp -d 192.214.7.130 -j DNAT --to-destination 192.214.7.139:80
 }
 
 # Client Water 7
 function Blueno {
+	echo nameserver 192.214.7.130 > /etc/resolv.conf
 	apt update
 }
 
 function Cipher {
+	echo nameserver 192.214.7.130 > /etc/resolv.conf
 	apt update
 }
 
 # Client Guanhao
 function Fukurou {
+	echo nameserver 192.214.7.130 > /etc/resolv.conf
 	apt update
 }
 
 function Elena {
+	echo nameserver 192.214.7.130 > /etc/resolv.conf
 	apt update
 }
 
 #Server Switch 2
 function Doriki { #DNS Server
+	echo nameserver 192.168.122.1 > /etc/resolv.conf
 	apt update
+	apt install bind9 -y
+
+	cat >/etc/bind/named.conf.options <<eof
+options {
+        directory "/var/cache/bind";
+
+        forwarders {
+                192.168.122.1;
+        };
+
+        allow-query { any; };
+
+        auth-nxdomain no;    # conform to RFC1035
+        listen-on-v6 { any; };
+};
+eof
+	service bind9 restart
+	#No. 3 Reject bila terdapat PING ICMP Lebih dari 3
+	iptables -A INPUT -p icmp -m connlimit --connlimit-above 3 --connlimit-mask 0 -j DROP
+	#No. 4 Akses dari subnet Blueno dan Cipher
+	#Blueno
+	iptables -A INPUT -s 192.214.7.0/25 -m time --weekdays Fri,Sat,Sun -j REJECT
+	iptables -A INPUT -s 192.214.7.0/25 -m time --timestart 00:00 --timestop 06:59 --weekdays Mon,Tue,Wed,Thu -j REJECT
+	iptables -A INPUT -s 192.214.7.0/25 -m time --timestart 15:01 --timestop 23:59 --weekdays Mon,Tue,Wed,Thu -j REJECT
+	#Cipher
+	iptables -A INPUT -s 192.214.0.0/22 -m time --weekdays Fri,Sat,Sun -j REJECT
+	iptables -A INPUT -s 192.214.0.0/22 -m time --timestart 00:00 --timestop 06:59 --weekdays Mon,Tue,Wed,Thu -j REJECT
+	iptables -A INPUT -s 192.214.0.0/22 -m time --timestart 15:01 --timestop 23:59 --weekdays Mon,Tue,Wed,Thu -j REJECT
+	#No. 5 Akses dari subnet Elena dan Fukuro
+	iptables -A INPUT -s 192.214.4.0/23 -m time --timestart 07:00 --timestop 15:00 -j REJECT #Elena
+	iptables -A INPUT -s 192.214.6.0/24 -m time --timestart 07:00 --timestop 15:00 -j REJECT #Fukuro
 }
 
 function Jipangu { #DHCP Server
+	echo nameserver 192.214.7.130 > /etc/resolv.conf
 	apt update
 
+	apt install isc-dhcp-server -y
 	cat >/etc/default/isc-dhcp-server <<eof
 INTERFACES="eth0"
 eof
@@ -110,16 +176,23 @@ subnet 192.214.6.0 netmask 255.255.255.0 {
     max-lease-time 7200;
 }
 
+subnet 192.214.7.128 netmask 255.255.255.248 {}
+subnet 192.214.7.144 netmask 255.255.255.252 {}
+subnet 192.214.7.148 netmask 255.255.255.252 {}
+subnet 192.214.7.136 netmask 255.255.255.248 {}
 eof
 	service isc-dhcp-server restart
+	iptables -A INPUT -p icmp -m connlimit --connlimit-above 3 --connlimit-mask 0 -j DROP
 }
 
 #Server Switch 1
 function Maingate { #Web Server
+	echo nameserver 192.214.7.130 > /etc/resolv.conf
 	apt update
 }
 
 function Jorge { #Web Server
+	echo nameserver 192.214.7.130 > /etc/resolv.conf
 	apt update
 }
 
